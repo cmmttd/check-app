@@ -1,8 +1,9 @@
-import 'package:expand_tap_area/expand_tap_area.dart';
 import 'package:first_dart/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:parallax_animation/parallax_animation.dart';
+
+import 'main_gpt_2.dart';
 
 void main() {
   runApp(MyApp());
@@ -39,35 +40,9 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> list = [
-      Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-            color: Colors.blue,
-            elevation: 5,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                "Welcome to the <> portal. Scroll down and check your politician",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 40,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            )),
-      ),
-      Column(
-        children: [
-          Expanded(flex: 1, child: SearchScreen()),
-          buildTree(),
-        ],
-      ),
-      Text("Credentials and etc",
-          style: TextStyle(
-            color: Colors.black38,
-            fontSize: 26,
-            fontWeight: FontWeight.w900,
-          )),
+      // firstPage(),
+      HomeScreenGpt(),
+      const SecondPage(),
     ];
 
     final colors = [Colors.white, Colors.white, Colors.white];
@@ -83,7 +58,7 @@ class HomePageState extends State<HomePage> {
         child: Scrollbar(
           controller: scrollController,
           child: PageView.builder(
-              itemCount: 3,
+              itemCount: 2,
               controller: scrollController,
               scrollDirection: Axis.vertical,
               itemBuilder: (context, index) {
@@ -102,6 +77,35 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  Column firstPage() {
+    return Column(
+      children: [
+        Expanded(flex: 1, child: SizedBox(width: 600, child: SearchScreen())),
+        buildTree(),
+      ],
+    );
+  }
+
+  Padding infoCard() {
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Card(
+          color: Colors.blue,
+          elevation: 5,
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Text(
+              "Welcome to the <> portal. Let's check your politician",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 40,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          )),
+    );
+  }
+
   Expanded buildTree() {
     return Expanded(
         flex: 6,
@@ -112,18 +116,37 @@ class HomePageState extends State<HomePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Text(snapshot.data.toString(),
-                      style: TextStyle(
-                        color: Colors.red,
+                      style: const TextStyle(
+                        color: Colors.black,
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
                       ));
                 } else if (snapshot.hasError) {
-                  return Text('No data');
+                  return infoCard();
                 }
-                // By default, show a loading spinner.
-                return const CircularProgressIndicator();
+                return const Expanded(
+                    child: Column(children: [
+                  Text("fake loading"),
+                  CircularProgressIndicator(),
+                ]));
               },
             )));
+  }
+}
+
+class SecondPage extends StatelessWidget {
+  const SecondPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text("Credentials and etc",
+        style: TextStyle(
+          color: Colors.black38,
+          fontSize: 26,
+          fontWeight: FontWeight.w900,
+        ));
   }
 }
 
@@ -154,13 +177,13 @@ class Promises {
   factory Promises.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-      'politician_id': int politician_id,
-      // 'promises': List<Promise> promises,
+        'politician_id': int politician_id,
+        // 'promises': List<Promise> promises,
       } =>
-          Promises(
-            politician_id: politician_id,
-            // promises: promises,
-          ),
+        Promises(
+          politician_id: politician_id,
+          // promises: promises,
+        ),
       _ => throw const FormatException('Failed to load album.'),
     };
   }

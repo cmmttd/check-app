@@ -1,5 +1,7 @@
 package com.belogrudov.servermock.controller;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +13,9 @@ public class MockController {
 
     @GetMapping(value = "/mock/promises/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin(originPatterns = "*")
-    String getMockPromises(@PathVariable String uuid) {
+    String getMockPromises(@PathVariable String uuid) throws InterruptedException {
         System.out.println(uuid);
+        TimeUnit.SECONDS.sleep(1);
         return """
                 {
                   "politician_id": 123,
