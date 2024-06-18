@@ -1,42 +1,59 @@
+import 'package:first_dart/main.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(Ex1App());
-}
-
-class Ex1App extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Ex1 App",
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(useMaterial3: true),
-      home: DetailsScreen(),
-    );
-  }
-}
+// void main() {
+//   runApp(Ex1App());
+// }
+//
+// class Ex1App extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: "Ex1 App",
+//       debugShowCheckedModeBanner: false,
+//       theme: ThemeData.light(useMaterial3: true),
+//       home: DetailsScreen(),
+//     );
+//   }
+// }
 
 class DetailsScreen extends StatelessWidget {
+  final String targetName;
+
+  DetailsScreen({super.key, required this.targetName});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [Colors.blue.shade700, Colors.purple.shade100], begin: Alignment.topRight, end: Alignment.bottomLeft))),
         title: IconButton(
           icon: Icon(Icons.account_balance),
-          onPressed: () => print('abc'),
+          onPressed: () {
+            print('abc');
+            // Navigator.pop(context);
+          },
         ),
         // title: Text("App bar"),
         backgroundColor: Colors.blue.shade300,
         foregroundColor: Colors.blue.shade100,
       ),
-      body: Ex1CheckWidget(),
+      body: Ex1CheckWidget(
+        targetName: targetName,
+      ),
     );
   }
 }
 
 class Ex1CheckWidget extends StatefulWidget {
+  final String targetName;
   double _progress = 0;
   late double count;
+
+  Ex1CheckWidget({super.key, required this.targetName});
 
   @override
   State<Ex1CheckWidget> createState() => _Ex1CheckWidgetState();
@@ -58,7 +75,7 @@ class _Ex1CheckWidgetState extends State<Ex1CheckWidget> {
   @override
   Widget build(BuildContext context) {
     var list = [
-      Text("Some progress: "),
+      Text("Some progress: for ${widget.targetName}"),
       // Expanded(
       //     child: LinearProgressIndicator(
       //       value: widget._progress,
@@ -66,7 +83,7 @@ class _Ex1CheckWidgetState extends State<Ex1CheckWidget> {
       //     )),
       Padding(
           // padding: EdgeInsets.all(2),
-          padding: EdgeInsets.fromLTRB(4,2,4,0),
+          padding: EdgeInsets.fromLTRB(4, 2, 4, 0),
           child: LinearProgressIndicator(
             color: Colors.blue,
             value: widget._progress,
@@ -112,7 +129,7 @@ class _Ex1CheckWidgetState extends State<Ex1CheckWidget> {
           // separatorBuilder: (context, index) => const Divider(),
           itemCount: pointsList.length,
           itemBuilder: (context, index) {
-            return Expanded(
+            return Container(
               child: Card(
                 color: Colors.blue.shade100,
                 child: pointsList[index],
