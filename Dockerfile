@@ -1,6 +1,7 @@
 FROM nginx:alpine
 
-COPY /frontend/build/web /usr/share/nginx/html
+RUN tree
+COPY ./frontend/build/web /usr/share/nginx/html
 
 EXPOSE 80
 
