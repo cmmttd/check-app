@@ -33,4 +33,4 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: cmmttd/test–actions-app:latest
+          tags: cmmttd/test:latest
