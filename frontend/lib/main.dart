@@ -1,175 +1,167 @@
-import 'package:expand_tap_area/expand_tap_area.dart';
-import 'package:first_dart/search_screen.dart';
+import 'package:first_dart/details_page.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:parallax_animation/parallax_animation.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const CheckApp());
 }
 
-class MyApp extends StatelessWidget {
+class CheckApp extends StatelessWidget {
+  final title = "the name";
+
+  const CheckApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Search and Timeline App',
+      title: title,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomePage(),
+      // theme: ThemeData.light(useMaterial3: true),
+      home:
+          // GestureDetector(
+          //   onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          //   child:
+          Scaffold(
+              appBar: AppBar(
+                flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            colors: [Colors.blue.shade700, Colors.purple.shade100], begin: Alignment.topLeft, end: Alignment.bottomRight))),
+                backgroundColor: Colors.blue.shade300,
+                title: Text(title),
+              ),
+              body: HomePage()),
+      // )
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  @override
-  HomePageState createState() => HomePageState();
-}
-
-class HomePageState extends State<HomePage> {
-  late final Future<String> json;
-
-  @override
-  void initState() {
-    super.initState();
-    json = obtainJson();
-  }
+class HomePage extends StatelessWidget {
+  HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> list = [
-      Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-            color: Colors.blue,
-            elevation: 5,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                "Welcome to the <> portal. Scroll down and check your politician",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 40,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            )),
-      ),
-      Column(
-        children: [
-          Expanded(flex: 1, child: SearchScreen()),
-          buildTree(),
-        ],
-      ),
-      Text("Credentials and etc",
-          style: TextStyle(
-            color: Colors.black38,
-            fontSize: 26,
-            fontWeight: FontWeight.w900,
-          )),
-    ];
-
-    final colors = [Colors.white, Colors.white, Colors.white];
-    final scrollController = PageController();
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.lightBlue,
-        title: Text('App logo'),
-        centerTitle: true,
-      ),
-      body: ParallaxArea(
-        child: Scrollbar(
-          controller: scrollController,
-          child: PageView.builder(
-              itemCount: 3,
-              controller: scrollController,
-              scrollDirection: Axis.vertical,
-              itemBuilder: (context, index) {
-                return ParallaxWidget(
-                  overflowWidthFactor: 1,
-                  background: ColoredBox(
-                    color: colors[index],
-                  ),
-                  child: Center(
-                    child: list[index],
-                  ),
-                );
-              }),
-        ),
-      ),
+    return Column(
+      children: [
+        SearchBarCustom(),
+        DescriptionCard(),
+        CredentialsArea(),
+      ],
     );
   }
+}
 
-  Expanded buildTree() {
-    return Expanded(
-        flex: 6,
-        child: Align(
-            alignment: Alignment.topCenter,
-            child: FutureBuilder<String>(
-              future: json,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Text(snapshot.data.toString(),
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                      ));
-                } else if (snapshot.hasError) {
-                  return Text('No data');
-                }
-                // By default, show a loading spinner.
-                return const CircularProgressIndicator();
-              },
+class CredentialsArea extends StatelessWidget {
+  const CredentialsArea({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Expanded(
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(10, 10, 10, 30),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Text("Credentials"),
             )));
   }
 }
 
-Future<String> obtainJson() async {
-  var response = await http.get(Uri.parse('http://localhost:8081/mock/promises/1'));
-  // var response = await http.get(Uri.parse('https://google.com'));
-  print('Resp: ${response.statusCode}');
-  if (response.statusCode == 200) {
-    print('Resp: ${response.body}');
-    // return Promises.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-    // return jsonDecode(response.body);
-    return response.body;
-  } else {
-    throw Exception('Failed to load album');
-  }
-}
-
-class Promises {
-  final int politician_id;
-
-  // final List<Promise> promises;
-
-  const Promises({
-    required this.politician_id,
-    // required this.promises,
+class DescriptionCard extends StatelessWidget {
+  const DescriptionCard({
+    super.key,
   });
 
-  factory Promises.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-      'politician_id': int politician_id,
-      // 'promises': List<Promise> promises,
-      } =>
-          Promises(
-            politician_id: politician_id,
-            // promises: promises,
-          ),
-      _ => throw const FormatException('Failed to load album.'),
-    };
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+        padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+        child: SizedBox(
+            width: 800,
+            child: Align(
+                alignment: Alignment.center,
+                child: Card(
+                  child: Padding(
+                      padding: EdgeInsets.all(50),
+                      child: Text(
+                          "Description how it may be used. Choose your politician!")),
+                ))));
   }
 }
 
-class Promise {
-  final int timestamp;
-  final String promise_name;
-  final String description;
+class SearchBarCustom extends StatelessWidget {
+  static const List<String> _options = ["Washington", "Churchill", "Kassym-Jomart Tokayev", "Clinton", "Arnold Schwarzenegger"];
 
-  Promise({required this.timestamp, required this.promise_name, required this.description});
+  const SearchBarCustom({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: 1200,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Autocomplete(
+            optionsBuilder: (textEditingValue) {
+              if (textEditingValue.text == '') {
+                return _options;
+              }
+              return _options.where((option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+            },
+            onSelected: (String selection) {
+              print('You just selected $selection');
+              navigateForward(context, selection);
+            },
+            fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+              return TextFormField(
+                // textInputAction: TextInputAction.next,
+                // style: const TextStyle(color: Colors.white),
+                controller: textEditingController,
+                focusNode: focusNode,
+                onFieldSubmitted: (String value) {
+                  print('>> submitted: $value');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DetailsScreen(
+                              targetName: value,
+                            )),
+                  );
+                  onFieldSubmitted();
+                },
+                onChanged: (str) => print('>> changed $str'),
+                onEditingComplete: () => print('>> edit complete'),
+                onTap: () => print('>> tap'),
+                onTapOutside: (v) {
+                  print('>> tap outside');
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
+                validator: (String? value) {
+                  if (!_options.contains(value)) {
+                    return 'Nothing selected.';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                    labelText: 'Search',
+                    labelStyle: TextStyle(backgroundColor: Colors.transparent),
+                    border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+                    prefixIcon: const Icon(Icons.search),
+                    hintText: "Name or birtdate",
+                    hintStyle: TextStyle(color: Colors.grey.shade400),
+                    alignLabelWithHint: true),
+              );
+            },
+          ),
+        ));
+  }
+
+  void navigateForward(BuildContext context, String value) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => DetailsScreen(
+                targetName: value,
+              )),
+    );
+  }
 }

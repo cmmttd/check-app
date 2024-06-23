@@ -24,9 +24,7 @@ class SearchScreenState extends State<SearchScreen> {
 
   void onQueryChanged(String query) {
     setState(() {
-      searchResults = data
-          .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      searchResults = data.where((item) => item.toLowerCase().contains(query.toLowerCase())).toList();
     });
   }
 
@@ -60,15 +58,15 @@ class SearchScreenState extends State<SearchScreen> {
 class CstmSearchBar extends StatelessWidget {
   final Func onQueryChanged;
 
-  const CstmSearchBar(this.onQueryChanged);
+  const CstmSearchBar(this.onQueryChanged, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: TextField(
         onChanged: onQueryChanged,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Search',
           border: OutlineInputBorder(),
           prefixIcon: Icon(Icons.search),
@@ -87,7 +85,15 @@ class TreeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [for (int i = 0; i < 4; i++) TreePoint(i: i)]);
+        // children: [for (int i = 0; i < 4; i++) TreePoint(i: i)]
+        children: [
+          // AnimatedList.builder(
+          ListView.builder(
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return TreePoint(i: index);
+              })
+        ]);
     // return Text('test');
   }
 }
@@ -133,3 +139,66 @@ class TreePoint extends StatelessWidget {
 }
 
 typedef Func = void Function(String s);
+
+// class TimelineTile extends StatelessWidget {
+//   final Map<String, String> event;
+//
+//   TimelineTile({required this.event});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     bool isLargeScreen = MediaQuery.of(context).size.width > 600;
+//
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 8.0),
+//       child: Row(
+//         children: <Widget>[
+//           Column(
+//             children: <Widget>[
+//               Container(
+//                 width: 2,
+//                 height: 20,
+//                 color: Colors.grey,
+//               ),
+//               Container(
+//                 width: 10,
+//                 height: 10,
+//                 decoration: BoxDecoration(
+//                   shape: BoxShape.circle,
+//                   color: Colors.blue,
+//                 ),
+//               ),
+//               Container(
+//                 width: 2,
+//                 height: 20,
+//                 color: Colors.grey,
+//               ),
+//             ],
+//           ),
+//           SizedBox(width: 16),
+//           Text(event['timestamp']!, style: TextStyle(color: Colors.grey)),
+//           SizedBox(width: 16),
+//           Expanded(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: <Widget>[
+//                 Text(
+//                   event['title']!,
+//                   style: TextStyle(fontWeight: FontWeight.bold),
+//                 ),
+//                 if (!isLargeScreen) Text(event['description']!),
+//               ],
+//             ),
+//           ),
+//           if (isLargeScreen)
+//             Flexible(
+//               child: Align(
+//                 alignment: Alignment.topLeft,
+//                 child: Text(event['description']!),
+//               ),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+// }
