@@ -1,8 +1,8 @@
 name: Flutter Web
 on:
   push:
-    tags:
-      - "web"
+    branches:
+      - "*"
 jobs:
   build:
     name: Build Web
