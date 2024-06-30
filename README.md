@@ -1,3 +1,4 @@
+[![Update Web](https://github.com/cmmttd/check-app/actions/workflows/build_web.yml/badge.svg?branch=main)](https://github.com/cmmttd/check-app/actions/workflows/build_web.yml)
 
 # check-app-front 
 
