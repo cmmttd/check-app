@@ -29,18 +29,18 @@ class CheckApp extends StatelessWidget {
                 backgroundColor: Colors.blue.shade300,
                 title: Text(title),
               ),
-              body: HomePage()),
+              body: const HomePage()),
       // )
     );
   }
 }
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
         SearchBarCustom(),
         DescriptionCard(),
@@ -140,7 +140,7 @@ class SearchBarCustom extends StatelessWidget {
                 },
                 decoration: InputDecoration(
                     labelText: 'Search',
-                    labelStyle: TextStyle(backgroundColor: Colors.transparent),
+                    labelStyle: const TextStyle(backgroundColor: Colors.transparent),
                     border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
                     prefixIcon: const Icon(Icons.search),
                     hintText: "Name or birtdate",
