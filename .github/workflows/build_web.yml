@@ -1,5 +1,7 @@
 name: Build Flutter Web
-on: [ push ]
+on:
+  pull_request:
+    types: [ labeled ]
 
 env:
   PROJECT_ID: ${{vars.GCP_PROJECT}}
@@ -7,6 +9,7 @@ env:
 
 jobs:
   build:
+    if: ${{ github.event.label.name == 'web' }}
     name: Build Web
     runs-on: ubuntu-latest
     steps:
@@ -36,6 +39,7 @@ jobs:
         working-directory: frontend/
         run: docker push ${{env.GAR_LOCATION}}
   deploy:
+    if: ${{ github.event.label.name == 'web' }}
     needs: build
     name: Deploy
     runs-on: ubuntu-latest
