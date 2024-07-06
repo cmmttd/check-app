@@ -1,4 +1,4 @@
-import 'package:first_dart/main.dart';
+import 'package:check_app/main.dart';
 import 'package:flutter/material.dart';
 
 // void main() {
