@@ -159,7 +159,7 @@ class PersistentHeader extends SliverPersistentHeaderDelegate {
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       // width: double.infinity,
-      // height: 106.0,
+      // height: 42.0,
       child: Card(
         // margin: EdgeInsets.all(0),
         // color: Colors.white,
