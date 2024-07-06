@@ -1,4 +1,4 @@
-import 'package:first_dart/details_page.dart';
+import 'package:check_app/details_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -81,10 +81,7 @@ class DescriptionCard extends StatelessWidget {
             child: Align(
                 alignment: Alignment.center,
                 child: Card(
-                  child: Padding(
-                      padding: EdgeInsets.all(50),
-                      child: Text(
-                          "Description how it may be used. Choose your politician!")),
+                  child: Padding(padding: EdgeInsets.all(50), child: Text("Description how it may be used. Choose your politician!")),
                 ))));
   }
 }
@@ -114,7 +111,7 @@ class SearchBarCustom extends StatelessWidget {
             fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
               return TextFormField(
                 // textInputAction: TextInputAction.next,
-                // style: const TextStyle(color: Colors.white),
+                // style: const TextStyle(color: Colors.red),
                 controller: textEditingController,
                 focusNode: focusNode,
                 onFieldSubmitted: (String value) {
@@ -151,6 +148,34 @@ class SearchBarCustom extends StatelessWidget {
                     alignLabelWithHint: true),
               );
             },
+            optionsViewBuilder: (context, onSelected, options) => Align(
+              alignment: Alignment.topLeft,
+              child: Material(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(2.0)),
+                ),
+                child: Container(
+                  height: 52.0 * options.length,
+                  width: 1100,
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: options.length,
+                    shrinkWrap: false,
+                    itemBuilder: (BuildContext context, int index) {
+                      final String option = options.elementAt(index);
+                      return InkWell(
+                        focusColor: Colors.blue,
+                        onTap: () => onSelected(option),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(option),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
           ),
         ));
   }
