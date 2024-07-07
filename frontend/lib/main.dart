@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:check_app/details_page.dart';
+import 'package:check_app/model/Completion.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+const String serverUrl = String.fromEnvironment('SERVER_URL', defaultValue: 'http://localhost:8081/mock');
 
 void main() {
   runApp(const CheckApp());
@@ -87,8 +93,6 @@ class DescriptionCard extends StatelessWidget {
 }
 
 class SearchBarCustom extends StatelessWidget {
-  static const List<String> _options = ["Washington", "Churchill", "Kassym-Jomart Tokayev", "Clinton", "Arnold Schwarzenegger"];
-
   const SearchBarCustom({super.key});
 
   @override
@@ -99,13 +103,18 @@ class SearchBarCustom extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Autocomplete(
             optionsBuilder: (textEditingValue) {
-              if (textEditingValue.text == '') {
-                return _options;
-              }
-              return _options.where((option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+              var text = textEditingValue.text;
+              var requestPath = text.isEmpty ? "completions" : "completion/$text";
+              return http
+                  .get(Uri.parse('$serverUrl/$requestPath'))
+                  .asStream()
+                  .map((event) => jsonDecode(event.body)["options"])
+                  .expand((element) => element.toList())
+                  .map((event) => Completion.fromJson(event).toString())
+                  .toList();
             },
             onSelected: (String selection) {
-              print('You just selected $selection');
+              print('>> selected $selection');
               navigateForward(context, selection);
             },
             fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
@@ -114,6 +123,9 @@ class SearchBarCustom extends StatelessWidget {
                 // style: const TextStyle(color: Colors.red),
                 controller: textEditingController,
                 focusNode: focusNode,
+                onTap: () => print('>> tap'),
+                onChanged: (str) => print('>> changed $str'),
+                onEditingComplete: () => print('>> edit complete'),
                 onFieldSubmitted: (String value) {
                   print('>> submitted: $value');
                   Navigator.push(
@@ -125,18 +137,16 @@ class SearchBarCustom extends StatelessWidget {
                   );
                   onFieldSubmitted();
                 },
-                onChanged: (str) => print('>> changed $str'),
-                onEditingComplete: () => print('>> edit complete'),
-                onTap: () => print('>> tap'),
                 onTapOutside: (v) {
                   print('>> tap outside');
                   FocusManager.instance.primaryFocus?.unfocus();
                 },
                 validator: (String? value) {
-                  if (!_options.contains(value)) {
-                    return 'Nothing selected.';
-                  }
-                  return null;
+                  // if (!_options.contains(value)) {
+                  print("nothing");
+                  return 'Nothing selected.';
+                  // }
+                  // return null;
                 },
                 decoration: InputDecoration(
                     labelText: 'Search',
