@@ -4,10 +4,6 @@ on:
     branches: [ main, 'feature/**' ]
     paths: [ 'frontend/**' ]
 
-env:
-  PROJECT_ID: ${{vars.GCP_PROJECT}}
-  GAR_LOCATION: ${{vars.GCP_REGION}}-docker.pkg.dev/${{vars.GCP_PROJECT}}/${{vars.GCP_CONTAINER_ARTIFACTORY}}/${{vars.GCP_ARTIFACT}}:latest
-
 jobs:
   build:
     name: Build Web
@@ -24,33 +20,12 @@ jobs:
           flutter config --enable-web
           flutter pub get
           flutter build web --release
-      - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build Docker image
-        working-directory: frontend/
-        run: docker build -t ${{ env.GAR_LOCATION }} .
       - name: GCP auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-      - name: GCP docker auth
-        run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
-      - name: Push Docker image
+      - name: Deploy latest to Cloud Storage
         working-directory: frontend/
-        run: docker push ${{env.GAR_LOCATION}}
-  deploy:
-    needs: build
-    name: Deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: GCP auth
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-      - name: GCP docker auth
-        run: gcloud auth configure-docker ${{vars.GCP_REGION}}-docker.pkg.dev --quiet
-      - name: Deploy latest on Cloud Run
         run: |
-          docker pull ${{env.GAR_LOCATION}}
-          IMAGE_DIGESTS=$(docker inspect ${{env.GAR_LOCATION}} --format='{{.RepoDigests}}' | sed 's:^.\(.*\).$:\1:' | tr " " "\n" | head -n 1)
-          gcloud run deploy check-app --image=$IMAGE_DIGESTS --region=europe-west4 --project=${{env.PROJECT_ID}}
+          gcloud config set project ${{vars.GCP_PROJECT}}
+          gcloud storage cp -r build/web/* gs://${{vars.GCP_STORAGE_FRONTEND}}
