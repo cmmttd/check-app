@@ -1,6 +1,7 @@
 package com.belogrudov.servermock.controller;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Builder;
@@ -87,8 +88,8 @@ public class MockController {
     record PoliticianData(String name, String surname, int birthdate, String countryCode) {
         @Override
         public String toString() {
-            return "{\"name\":\"%s\",\"surname\":\"%s\",\"birthdate\":%d,\"countryCode\":\"%s\"}"
-                    .formatted(name, surname, birthdate, countryCode);
+            return "{\"name\":\"%s\",\"surname\":\"%s\",\"birthdate\":%d,\"countryCode\":\"%s\",\"uuid\":\"%s\"}"
+                    .formatted(name, surname, birthdate, countryCode, UUID.randomUUID().toString());
         }
     }
 }
