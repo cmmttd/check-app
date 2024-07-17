@@ -101,7 +101,7 @@ class SearchBarCustom extends StatelessWidget {
         width: 1200,
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: Autocomplete(
+          child: Autocomplete<Completion>(
             optionsBuilder: (textEditingValue) {
               var text = textEditingValue.text;
               var requestPath = text.isEmpty ? "completions" : "completion/$text";
@@ -110,12 +110,13 @@ class SearchBarCustom extends StatelessWidget {
                   .asStream()
                   .map((event) => jsonDecode(event.body)["options"])
                   .expand((element) => element.toList())
-                  .map((event) => Completion.fromJson(event).toString())
+                  .map((event) => Completion.fromJson(event))
+                  // .map((event) => event.toString())
                   .toList();
             },
-            onSelected: (String selection) {
+            onSelected: (Completion selection) {
               print('>> selected $selection');
-              navigateForward(context, selection);
+              navigateForward(context, selection.toString());
             },
             fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
               return TextFormField(
@@ -172,13 +173,13 @@ class SearchBarCustom extends StatelessWidget {
                     itemCount: options.length,
                     shrinkWrap: false,
                     itemBuilder: (BuildContext context, int index) {
-                      final String option = options.elementAt(index);
+                      final Completion option = options.elementAt(index);
                       return InkWell(
                         focusColor: Colors.blue,
                         onTap: () => onSelected(option),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: Text(option),
+                          child: Text(option.toString()),
                         ),
                       );
                     },
