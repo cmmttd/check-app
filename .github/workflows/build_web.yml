@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build Web
+    name: Build Flutter Web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +19,7 @@ jobs:
         run: |
           flutter config --enable-web
           flutter pub get
-          flutter build web --release
+          flutter build web --release --dart-define=SERVER_URL=https://mock-server-2szvf52diq-uc.a.run.app/mock
       - name: GCP auth
         uses: google-github-actions/auth@v2
         with:

@@ -1,0 +1,44 @@
+name: Build Mock Server
+on:
+  push:
+    branches: [ main, 'feature/**' ]
+    paths: [ 'server-mock/**' ]
+
+env:
+  GAR_LOCATION: ${{vars.GCP_REGION}}-docker.pkg.dev/${{vars.GCP_PROJECT}}/${{vars.GCP_CONTAINER_ARTIFACTORY}}/${{vars.MOCK_SERVER_ARTIFACT_NAME}}:latest
+
+jobs:
+  build:
+    name: Build Mock Server Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        working-directory: server-mock/
+        run: docker build -t ${{ env.GAR_LOCATION }} .
+      - name: GCP auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+      - name: GCP docker auth
+        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
+      - name: Push Docker image
+        run: docker push ${{ env.GAR_LOCATION }}
+  deploy:
+    needs: build
+    name: Deploy Mock Server Cloud Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: GCP auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+      - name: GCP docker auth
+        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
+      - name: Deploy latest on Cloud Run
+        run: |
+          docker pull ${{ env.GAR_LOCATION }}
+          IMAGE_DIGESTS=$(docker inspect ${{env.GAR_LOCATION}} --format='{{.RepoDigests}}' | sed 's:^.\(.*\).$:\1:' | tr " " "\n" | head -n 1)
+          gcloud run deploy server-mock --image=$IMAGE_DIGESTS --region=${{vars.GCP_REGION}} --project=${{vars.GCP_PROJECT}}

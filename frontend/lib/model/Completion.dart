@@ -1,34 +1,25 @@
-class Completion {
-  final String uuid;
-  final String name;
-  final String surname;
-  final int birthdate;
-  final String countryCode;
+import 'package:check_app/model/Subject.dart';
 
-  const Completion({required this.uuid, required this.name, required this.surname, required this.birthdate, required this.countryCode});
+class Completion {
+  final String? input;
+  final List<Subject>? options;
+
+  const Completion({
+    required this.input,
+    required this.options,
+  });
 
   factory Completion.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'uuid': String uuid,
-        'name': String name,
-        'surname': String surname,
-        'birthdate': int birthdate,
-        'countryCode': String countryCode,
-      } =>
-        Completion(
-          uuid: uuid,
-          name: name,
-          surname: surname,
-          birthdate: birthdate,
-          countryCode: countryCode,
-        ),
-      _ => throw const FormatException('Failed to construct Completion'),
-    };
+    var optionsJson = json['options'] as List;
+    var options = optionsJson.map((e) => Subject.fromJson(e)).toList();
+    return Completion(
+      input: json['input'],
+      options: options,
+    );
   }
 
   @override
   String toString() {
-    return '$name $surname, $birthdate, $countryCode';
+    return 'Completion{input: $input, options: $options}';
   }
 }

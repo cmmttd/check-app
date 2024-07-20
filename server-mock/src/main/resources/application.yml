@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: server-mock
+server:
+  port: 8081
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_URL:"http://localhost:*"}
