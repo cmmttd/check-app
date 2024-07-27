@@ -19,7 +19,7 @@ jobs:
         run: |
           flutter config --enable-web
           flutter pub get
-          flutter build web --release --dart-define=SERVER_URL=https://mock-server-2szvf52diq-uc.a.run.app/mock
+          flutter build web --release --dart-define=SERVER_URL=https://server-mock-2szvf52diq-ew.a.run.app/mock
       - name: GCP auth
         uses: google-github-actions/auth@v2
         with:
