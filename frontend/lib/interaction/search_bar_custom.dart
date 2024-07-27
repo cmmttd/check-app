@@ -132,7 +132,7 @@ class _SearchBarCustomState extends State<SearchBarCustom> {
   Future<List<Subject>> fetchSuggestions(String query) async {
     final response = await http.get(Uri.parse('$serverUrl/$query'));
     if (response.statusCode == 200) {
-      // todo: migrate to Completion data object
+      // fixme: migrate to Completion data object
       List decode = json.decode(response.body)['options'];
       return decode.map((suggestion) => Subject.fromJson(suggestion)).toList();
     } else {
