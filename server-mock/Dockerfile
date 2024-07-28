@@ -8,6 +8,6 @@ RUN mvn clean package -DskipTests=true
 FROM openjdk:21-slim
 WORKDIR /
 COPY --from=maven /target/*.jar app.jar
-ENV SERVER_PORT=8081
-EXPOSE 8081
+ENV SERVER_PORT=8080
+EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]
