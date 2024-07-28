@@ -9,5 +9,6 @@ FROM openjdk:21-slim
 WORKDIR /
 COPY --from=maven /target/*.jar app.jar
 ENV SERVER_PORT=8080
+ENV SELF_SIGNED_CERT_PASSWORD=${SELF_SIGNED_CERT_PASSWORD}
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]

@@ -2,7 +2,7 @@ name: Build Mock Server
 on:
   push:
     branches: [ main, 'feature/**' ]
-    paths: [ 'server-mock/**' ]
+    paths: [ 'server-mock/**', 'workflows/build_mock_server.yml' ]
 
 env:
   GAR_LOCATION: ${{vars.MOCK_SERVER_ARTIFACT_NAME}}:latest
@@ -17,7 +17,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
         working-directory: server-mock/
-        run: docker build -t ${{ env.GAR_LOCATION }} .
+        run: docker build --build-arg SELF_SIGNED_CERT_PASSWORD=${{secrets.SELF_SIGNED_CERT_PASSWORD}} -t ${{ env.GAR_LOCATION }} .
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -37,4 +37,5 @@ jobs:
       - name: Deploy latest
         run: |
           docker pull ${{ env.GAR_LOCATION }}
-          gcloud compute instances update-container server-mock --container-image ${{env.GAR_LOCATION}} --zone us-east1-c
+          gcloud compute instances update-container server-mock --container-image ${{env.GAR_LOCATION}} \
+            --zone us-east1-c --container-env CORS_ALLOWED_URL=https://test-domain-promise.online/
