@@ -22,7 +22,10 @@ class DetailsScreen extends StatelessWidget {
         flexibleSpace: Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(
-                    colors: [Colors.blue.shade700, Colors.purple.shade100], begin: Alignment.topRight, end: Alignment.bottomLeft))),
+          colors: [Colors.blue.shade700, Colors.purple.shade100],
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+        ))),
         title: TitleTextButton(
           title: '${target.name} ${target.surname}',
         ),
