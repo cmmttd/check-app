@@ -86,7 +86,7 @@ class CheckMarkRow extends StatelessWidget {
             Checkbox(
               // checkColor: Colors.blue,
               // focusColor: Colors.blue,
-              // hoverColor: Colors.red,
+              hoverColor: Colors.red,
               activeColor: Colors.blue,
               value: promise.isFulfilled,
               onChanged: (bool? value) {},

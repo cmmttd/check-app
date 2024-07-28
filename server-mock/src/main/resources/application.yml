@@ -1,13 +1,5 @@
 spring:
   application:
     name: server-mock
-server:
-  port: 443
-  ssl:
-    key-store: classpath:keystore.p12
-    key-store-password: ${SELF_SIGNED_CERT_PASSWORD}
-    key-store-type: PKCS12
-    key-alias: tomcat
-
 cors:
   allowed-origins: ${CORS_ALLOWED_URL:*}

@@ -90,7 +90,7 @@ public class MockController {
         return IntStream.range(0, random.nextInt(13, 25))
                 .mapToObj(x -> Promise.builder()
                         .date(LocalDate.now().minusYears(random.nextInt(3, 42)))
-                        .title("Random title" + x)
+                        .title("Random title: " + x)
                         .description("Random description" + x)
                         .isFulfilled(random.nextBoolean())
                         .build())

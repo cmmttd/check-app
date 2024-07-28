@@ -7,8 +7,6 @@ RUN mvn clean package -DskipTests=true
 
 FROM openjdk:21-slim
 WORKDIR /
-COPY --from=maven /target/*.jar app.jar
-ENV SERVER_PORT=443
-ENV SELF_SIGNED_CERT_PASSWORD=${SELF_SIGNED_CERT_PASSWORD}
-EXPOSE 443
-ENTRYPOINT ["java","-jar","app.jar"]
+COPY --from=maven /target/*.jar server-mock.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","server-mock.jar"]
