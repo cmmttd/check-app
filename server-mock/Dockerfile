@@ -1,4 +1,4 @@
-FROM maven:3.9.8-amazoncorretto-21-al2023 as maven
+FROM maven:3.9.8-amazoncorretto-21-al2023 AS maven
 WORKDIR /
 COPY pom.xml .
 RUN mvn dependency:go-offline
