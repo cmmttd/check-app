@@ -8,5 +8,5 @@ RUN mvn clean package -DskipTests=true
 FROM openjdk:21-slim
 WORKDIR /
 COPY --from=maven /target/*.jar server-mock.jar
-EXPOSE 8080
+EXPOSE 80
 ENTRYPOINT ["java","-jar","server-mock.jar"]

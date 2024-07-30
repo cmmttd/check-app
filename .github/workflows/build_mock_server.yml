@@ -34,17 +34,15 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: Deploy latest
         run: |
+          docker pull ${{env.GAR_LOCATION}}
+          IMAGE_DIGESTS=$(docker inspect ${{env.GAR_LOCATION}} --format='{{.RepoDigests}}' | sed 's:^.\(.*\).$:\1:' | tr " " "\n" | head -n 1)
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          docker pull ${{ env.GAR_LOCATION }}
           gcloud compute instance-templates create-with-container server-mock-template-v$TIMESTAMP \
             --machine-type e2-micro \
             --tags http-server,https-server \
-            --container-image ${{env.GAR_LOCATION}} \
+            --container-image $IMAGE_DIGESTS \
             --container-env CORS_ALLOWED_URL=${{vars.TEST_DOMAIN_URL}}
           gcloud compute instance-groups managed rolling-action start-update server-mock-group \
             --version template=server-mock-template-v$TIMESTAMP \

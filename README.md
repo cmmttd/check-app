@@ -1,22 +1,14 @@
-[![Update Web](https://github.com/cmmttd/check-app/actions/workflows/build_web.yml/badge.svg?branch=main)](https://github.com/cmmttd/check-app/actions/workflows/build_web.yml)
+[![Update Web](https://github.com/cmmttd/check-app/actions/workflows/build_web.yml/badge.svg?branch=main)](https://github.com/cmmttd/check-app/actions/workflows/build_web.yml) [![Build Mock Server](https://github.com/cmmttd/check-app/actions/workflows/build_mock_server.yml/badge.svg?branch=main)](https://github.com/cmmttd/check-app/actions/workflows/build_mock_server.yml)
 
 # The check_app project
-(test) https://ipromise.life/
+#### (prod) tbd
+#### (test) https://test-domain-promise.online/
 
-## Getting Started
+## Purpose
+The main idea of the project is to force top-down promises to be fulfilled faster. 
 
-Web frontend run: 
-* Install flutter plugin via Intelij UI
-* Install Flutter - https://docs.flutter.dev/get-started/install
-* Then:
-    ```shell
-    flutter doctor
-    flutter pub get
-    ```
-* Then:
-    ```shell
-    flutter run -d chrome
-    ```
+## Structure
+tbd - c4 diagram (mb using structurizr)
 
-Mock backend run:  
-* Run the ServerMockApplication.java
+## Infrastructure
+tbd - gcp diagram

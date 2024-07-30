@@ -9,7 +9,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MockController {
 
     private static final Map<String, Subject> data = new HashMap<>();
+    private static final Random RANDOM = new Random();
 
     static {
         fillAndStore("George", "Washington", LocalDate.of(1732, 1, 2), "US");
@@ -32,12 +32,11 @@ public class MockController {
 
     @GetMapping(value = "/mock/promises/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin(origins = "${cors.allowed-origins}")
-    public String getMockPromises(@PathVariable String uuid) throws InterruptedException {
+    public String getMockPromises(@PathVariable String uuid) {
         log.debug("Promises requested for {}", uuid);
         return data.get(uuid).toFullJson();
     }
 
-    @SneakyThrows
     @GetMapping(value = "/mock/completion/{input}", produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin(origins = "${cors.allowed-origins}")
     public String getCompletion(@PathVariable String input) {
@@ -54,7 +53,6 @@ public class MockController {
                 }""".formatted(input, options);
     }
 
-    @SneakyThrows
     @GetMapping(value = "/mock/completions", produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin(origins = "${cors.allowed-origins}")
     public String getCompletion() {
@@ -86,13 +84,12 @@ public class MockController {
     }
 
     private static List<Promise> generateRandomPromises() {
-        Random random = new Random();
-        return IntStream.range(0, random.nextInt(13, 25))
+        return IntStream.range(0, RANDOM.nextInt(13, 25))
                 .mapToObj(x -> Promise.builder()
-                        .date(LocalDate.now().minusYears(random.nextInt(3, 42)))
+                        .date(LocalDate.now().minusYears(RANDOM.nextInt(3, 42)))
                         .title("Random title: " + x)
                         .description("Random description" + x)
-                        .isFulfilled(random.nextBoolean())
+                        .isFulfilled(RANDOM.nextBoolean())
                         .build())
                 .sorted((o1, o2) -> o2.date().compareTo(o1.date()))
                 .toList();
