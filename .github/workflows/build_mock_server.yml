@@ -1,0 +1,51 @@
+name: Build Mock Server
+on:
+  push:
+    branches: [ main, 'feature/**' ]
+    paths: [ 'server-mock/**', 'workflows/build_mock_server.yml' ]
+
+env:
+  GAR_LOCATION: ${{vars.MOCK_SERVER_ARTIFACT_NAME}}:latest
+
+jobs:
+  build:
+    name: Build Mock Server Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        working-directory: server-mock/
+        run: docker build -t ${{ env.GAR_LOCATION }} .
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push Docker image
+        run: docker push ${{ env.GAR_LOCATION }}
+  deploy:
+    needs: build
+    name: Deploy Mock Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: GCP auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+      - name: Deploy latest
+        run: |
+          docker pull ${{env.GAR_LOCATION}}
+          IMAGE_DIGESTS=$(docker inspect ${{env.GAR_LOCATION}} --format='{{.RepoDigests}}' | sed 's:^.\(.*\).$:\1:' | tr " " "\n" | head -n 1)
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          gcloud compute instance-templates create-with-container server-mock-template-v$TIMESTAMP \
+            --machine-type e2-micro \
+            --tags http-server,https-server \
+            --container-image $IMAGE_DIGESTS \
+            --container-env CORS_ALLOWED_URL=${{vars.TEST_DOMAIN_URL}}
+          gcloud compute instance-groups managed rolling-action start-update server-mock-group \
+            --version template=server-mock-template-v$TIMESTAMP \
+            --zone us-east1-c \
+            --max-surge 1 \
+            --max-unavailable 1

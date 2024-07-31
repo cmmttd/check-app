@@ -1,4 +1,4 @@
-FROM maven:3.9.8-amazoncorretto-21-al2023 as maven
+FROM maven:3.9.8-amazoncorretto-21-al2023 AS maven
 WORKDIR /
 COPY pom.xml .
 RUN mvn dependency:go-offline
@@ -7,7 +7,6 @@ RUN mvn clean package -DskipTests=true
 
 FROM openjdk:21-slim
 WORKDIR /
-COPY --from=maven /target/*.jar app.jar
-ENV SERVER_PORT=8081
-EXPOSE 8081
-ENTRYPOINT ["java","-jar","app.jar"]
+COPY --from=maven /target/*.jar server-mock.jar
+EXPOSE 80
+ENTRYPOINT ["java","-jar","server-mock.jar"]

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: server-mock
+server:
+  port: 80
+cors:
+  allowed-origins: ${CORS_ALLOWED_URL:*}

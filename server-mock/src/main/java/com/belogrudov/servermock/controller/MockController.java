@@ -1,11 +1,14 @@
 package com.belogrudov.servermock.controller;
 
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
-import lombok.Builder;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,51 +20,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MockController {
 
-    private static final List<PoliticianData> data = List.of(
-            PoliticianData.builder().name("George").surname("Washington").birthdate(1732).countryCode("US").build(),
-            PoliticianData.builder().name("Winston").surname("Churchill").birthdate(1874).countryCode("UK").build(),
-            PoliticianData.builder().name("Otto").surname("von Bismarck").birthdate(1815).countryCode("DE").build(),
-            PoliticianData.builder().name("Kassym-Jomart").surname("Tokayev").birthdate(1953).countryCode("KZ").build()
-    );
+    private static final Map<String, Subject> data = new HashMap<>();
+    private static final Random RANDOM = new Random();
 
-    @GetMapping(value = "/mock/promises/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @CrossOrigin(originPatterns = "*")
-    public String getMockPromises(@PathVariable String uuid) throws InterruptedException {
-        log.trace(uuid);
-        TimeUnit.SECONDS.sleep(1);
-        return """
-                {
-                  "politician_id": 123,
-                  "promises": [
-                    {
-                      "timestamp": 1234,
-                      "promise_name": "test_name",
-                      "description": "test_description",
-                      "evidences": [
-                        {
-                          "name": "test_evidence_name1",
-                          "fulfilled": 0.8
-                        }
-                      ],
-                      "links": [
-                        {
-                          "name": "test_link_name1",
-                          "link": "http://google.com"
-                        }
-                      ],
-                      "is_fulfilled": true
-                    }
-                  ]
-                }""";
+    static {
+        fillAndStore("George", "Washington", LocalDate.of(1732, 1, 2), "US");
+        fillAndStore("Winston", "Churchill", LocalDate.of(1874, 11, 20), "UK");
+        fillAndStore("Otto", "von Bismarck", LocalDate.of(1815, 3, 22), "DE");
+        fillAndStore("Kassym-Jomart", "Tokayev", LocalDate.of(1953, 5, 2), "KZ");
     }
 
-    @SneakyThrows
+    @GetMapping(value = "/mock/promises/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = "${cors.allowed-origins}")
+    public String getMockPromises(@PathVariable String uuid) {
+        log.debug("Promises requested for {}", uuid);
+        return data.get(uuid).toFullJson();
+    }
+
     @GetMapping(value = "/mock/completion/{input}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @CrossOrigin(originPatterns = "*")
+    @CrossOrigin(origins = "${cors.allowed-origins}")
     public String getCompletion(@PathVariable String input) {
-        TimeUnit.SECONDS.sleep(1);
-        List<PoliticianData> options = data.stream()
-                .filter(x -> x.toString().toLowerCase().contains(input.toLowerCase()))
+        List<String> options = data.values().stream()
+                .filter(x -> x.toSimpleJson().toLowerCase().contains(input.toLowerCase()))
+                .sorted((Comparator.comparing(Subject::getName)))
+                .map(Subject::toSimpleJson)
                 .toList();
         log.debug("Completion found for input: {}  {}", input, options.size());
         return """
@@ -71,25 +53,45 @@ public class MockController {
                 }""".formatted(input, options);
     }
 
-    @SneakyThrows
     @GetMapping(value = "/mock/completions", produces = MediaType.APPLICATION_JSON_VALUE)
-    @CrossOrigin(originPatterns = "*")
+    @CrossOrigin(origins = "${cors.allowed-origins}")
     public String getCompletion() {
-        TimeUnit.SECONDS.sleep(1);
-        log.debug("All completions requested: {}", data.size());
-        return """
+        List<String> options = data.values().stream()
+                .sorted((Comparator.comparing(Subject::getName)))
+                .map(Subject::toSimpleJson)
+                .toList();
+        String formatted = """
                 {
                   "input": "",
                   "options": %s
-                }""".formatted(data);
+                }""".formatted(options);
+        log.debug("All completions requested: {} - {}", data.size(), formatted);
+        return formatted;
     }
 
-    @Builder
-    record PoliticianData(String name, String surname, int birthdate, String countryCode) {
-        @Override
-        public String toString() {
-            return "{\"name\":\"%s\",\"surname\":\"%s\",\"birthdate\":%d,\"countryCode\":\"%s\",\"uuid\":\"%s\"}"
-                    .formatted(name, surname, birthdate, countryCode, UUID.randomUUID().toString());
-        }
+    private static void fillAndStore(String name, String surname, LocalDate birthdate, String countryCode) {
+        String uuid = UUID.randomUUID().toString();
+        Subject subject = Subject.builder()
+                .uuid(uuid)
+                .name(name)
+                .surname(surname)
+                .birthdate(birthdate)
+                .countryCode(countryCode)
+                .bio("%s %s %")
+                .promises(generateRandomPromises())
+                .build();
+        data.put(uuid, subject);
+    }
+
+    private static List<Promise> generateRandomPromises() {
+        return IntStream.range(0, RANDOM.nextInt(13, 25))
+                .mapToObj(x -> Promise.builder()
+                        .date(LocalDate.now().minusYears(RANDOM.nextInt(3, 42)))
+                        .title("Random title: " + x)
+                        .description("Random description" + x)
+                        .isFulfilled(RANDOM.nextBoolean())
+                        .build())
+                .sorted((o1, o2) -> o2.date().compareTo(o1.date()))
+                .toList();
     }
 }
