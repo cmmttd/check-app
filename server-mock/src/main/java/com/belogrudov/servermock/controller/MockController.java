@@ -77,7 +77,7 @@ public class MockController {
                 .surname(surname)
                 .birthdate(birthdate)
                 .countryCode(countryCode)
-                .bio("%s %s %")
+                .bio("%s %s %s".formatted(name, surname, birthdate))
                 .promises(generateRandomPromises())
                 .build();
         data.put(uuid, subject);
