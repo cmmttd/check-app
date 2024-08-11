@@ -34,7 +34,7 @@ class DetailsScreen extends StatelessWidget {
         foregroundColor: Colors.blue.shade100,
       ),
       // body: Ex1CheckWidget(),
-      body: FutureBuilder<List<Promise>>(
+      body: FutureBuilder<Subject>(
         future: fetchPromises(target.uuid),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,15 +44,31 @@ class DetailsScreen extends StatelessWidget {
           } else if (!snapshot.hasData) {
             return const Center(child: Text('No data available'));
           } else {
-            final promises = snapshot.data!;
-            return ListView.builder(
-              itemCount: promises.length,
-              itemBuilder: (context, index) {
-                final promise = promises[index];
-                return ListTile(
-                  title: CheckMarkRow(promise: promise),
-                );
-              },
+            final subject = snapshot.data!;
+            final promises = subject.promises!;
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                            style: TextStyle(fontSize: 18),
+                            "Some bio information about the ${subject.bio!}",
+                          ))),
+                ),
+                // todo: Align the promises list by center
+                SliverFixedExtentList(
+                  itemExtent: 50.0,
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: promises.length,
+                    (ctx, index) {
+                      var promise = promises[index];
+                      return ListTile(iconColor: promise.isFulfilled ? Colors.green : Colors.red, title: CheckMarkRow(promise: promise));
+                    },
+                  ),
+                ),
+              ],
             );
           }
         },
@@ -61,12 +77,10 @@ class DetailsScreen extends StatelessWidget {
   }
 }
 
-Future<List<Promise>> fetchPromises(String uuid) async {
+Future<Subject> fetchPromises(String uuid) async {
   var response = await http.get(Uri.parse('$serverUrl/promises/$uuid'));
   if (response.statusCode == 200) {
-    // todo: migrate to Subject data structure parsing instead
-    List jsonResponse = jsonDecode(response.body)["promises"];
-    return jsonResponse.map((promise) => Promise.fromJson(promise)).toList();
+    return Subject.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to load entities');
   }
@@ -83,15 +97,15 @@ class CheckMarkRow extends StatelessWidget {
         height: 42,
         child: Row(
           children: [
-            Checkbox(
-              // checkColor: Colors.blue,
-              // focusColor: Colors.blue,
-              // hoverColor: Colors.red,
-              activeColor: Colors.blue,
-              value: promise.isFulfilled,
-              onChanged: (bool? value) {},
+            Icon(promise.isFulfilled ? Icons.done : Icons.dangerous_outlined),
+            const SizedBox(
+              width: 4,
             ),
-            Text(promise.toString())
+            Text(promise.date),
+            const SizedBox(
+              width: 4,
+            ),
+            Text(promise.description)
           ],
         ));
   }

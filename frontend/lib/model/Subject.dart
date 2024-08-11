@@ -27,8 +27,12 @@ class Subject {
       birthdate: json['birthdate'],
       countryCode: json['country_code'],
       bio: json['bio'],
-      promises: json['promises'],
+      promises: inferPromises(json["promises"]),
     );
+  }
+
+  static List<Promise>? inferPromises(List? jsonPromises) {
+    return jsonPromises?.map((promise) => Promise.fromJson(promise)).toList();
   }
 
   @override
