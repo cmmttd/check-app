@@ -20,7 +20,12 @@ public class CorsConfig implements WebMvcConfigurer {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/mock/**")
+                registry
+                        .addMapping("/completions/**")
+                        .allowedOrigins(allowedOrigins)
+                        .allowedMethods("GET", "POST");
+                registry
+                        .addMapping("/promises/**")
                         .allowedOrigins(allowedOrigins)
                         .allowedMethods("GET", "POST");
             }
