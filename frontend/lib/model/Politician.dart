@@ -1,7 +1,6 @@
 import 'Promise.dart';
 
-class Subject {
-  final String uuid;
+class Politician {
   final String name;
   final String surname;
   final String birthdate;
@@ -9,8 +8,7 @@ class Subject {
   final String? bio;
   final List<Promise>? promises;
 
-  const Subject({
-    required this.uuid,
+  const Politician({
     required this.name,
     required this.surname,
     required this.birthdate,
@@ -19,9 +17,8 @@ class Subject {
     required this.promises,
   });
 
-  factory Subject.fromJson(Map<String, dynamic> json) {
-    return Subject(
-      uuid: json['uuid'],
+  factory Politician.fromJson(Map<String, dynamic> json) {
+    return Politician(
       name: json['name'],
       surname: json['surname'],
       birthdate: json['birthdate'],

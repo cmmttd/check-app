@@ -1,8 +1,8 @@
-import 'package:check_app/model/Subject.dart';
+import 'package:check_app/model/Politician.dart';
 
 class Completion {
   final String? input;
-  final List<Subject>? options;
+  final List<Politician>? options;
 
   const Completion({
     required this.input,
@@ -10,8 +10,8 @@ class Completion {
   });
 
   factory Completion.fromJson(Map<String, dynamic> json) {
-    var optionsJson = json['options'] as List;
-    var options = optionsJson.map((e) => Subject.fromJson(e)).toList();
+    var optionsJson = json['completions'] as List;
+    var options = optionsJson.map((e) => Politician.fromJson(e)).toList();
     return Completion(
       input: json['input'],
       options: options,

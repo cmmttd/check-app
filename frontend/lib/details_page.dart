@@ -5,13 +5,14 @@ import 'package:check_app/model/Promise.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'model/Subject.dart';
+import 'model/Politician.dart';
+import 'model/MinimalPolitician.dart';
 
 // --dart-define=SERVER_URL=https://mock-server-2szvf52diq-uc.a.run.app/mock --web-port=56558
 const String serverUrl = String.fromEnvironment('SERVER_URL', defaultValue: 'http://localhost:8081/mock');
 
 class DetailsScreen extends StatelessWidget {
-  final Subject target;
+  final MinimalPolitician target;
 
   const DetailsScreen({super.key, required this.target});
 
@@ -27,14 +28,14 @@ class DetailsScreen extends StatelessWidget {
           end: Alignment.bottomLeft,
         ))),
         title: TitleTextButton(
-          title: '${target.name} ${target.surname}',
+          title: target.name,
         ),
         // title: Text("App bar"),
         backgroundColor: Colors.blue.shade300,
         foregroundColor: Colors.blue.shade100,
       ),
       // body: Ex1CheckWidget(),
-      body: FutureBuilder<Subject>(
+      body: FutureBuilder<Politician>(
         future: fetchPromises(target.uuid),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,17 +45,17 @@ class DetailsScreen extends StatelessWidget {
           } else if (!snapshot.hasData) {
             return const Center(child: Text('No data available'));
           } else {
-            final subject = snapshot.data!;
-            final promises = subject.promises!;
+            final politician = snapshot.data!;
+            final promises = politician.promises!;
             return CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: Center(
+                  child: Card(
                       child: Padding(
-                          padding: EdgeInsets.all(8),
+                          padding: EdgeInsets.all(16),
                           child: Text(
-                            style: TextStyle(fontSize: 18),
-                            "Some bio information about the ${subject.bio!}",
+                            style: TextStyle(fontSize: 16),
+                            politician.bio!,
                           ))),
                 ),
                 // todo: Align the promises list by center
@@ -77,10 +78,10 @@ class DetailsScreen extends StatelessWidget {
   }
 }
 
-Future<Subject> fetchPromises(String uuid) async {
+Future<Politician> fetchPromises(String uuid) async {
   var response = await http.get(Uri.parse('$serverUrl/promises/$uuid'));
   if (response.statusCode == 200) {
-    return Subject.fromJson(jsonDecode(response.body));
+    return Politician.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to load entities');
   }
@@ -105,7 +106,7 @@ class CheckMarkRow extends StatelessWidget {
             const SizedBox(
               width: 4,
             ),
-            Text(promise.description)
+            Text(promise.title)
           ],
         ));
   }

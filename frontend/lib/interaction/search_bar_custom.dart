@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:check_app/model/Subject.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../details_page.dart';
+import '../model/MinimalPolitician.dart';
 
 const String serverUrl = String.fromEnvironment('SERVER_URL', defaultValue: 'http://localhost:8081/mock');
 
@@ -26,10 +26,10 @@ class _SearchBarCustomState extends State<SearchBarCustom> {
         child: Column(children: [
           Container(
             padding: const EdgeInsets.all(16),
-            child: Autocomplete<Subject>(
+            child: Autocomplete<MinimalPolitician>(
               optionsBuilder: (textEditingValue) async {
                 var text = textEditingValue.text;
-                var query = text.isEmpty ? "completions" : "completion/$text";
+                var query = text.isEmpty ? "completions" : "completions/$text";
                 setState(() {
                   _isLoading = true;
                   _errorMessage = null;
@@ -45,10 +45,10 @@ class _SearchBarCustomState extends State<SearchBarCustom> {
                     _isLoading = false;
                     _errorMessage = 'Failed to load suggestions';
                   });
-                  return const Iterable<Subject>.empty();
+                  return const Iterable<MinimalPolitician>.empty();
                 }
               },
-              onSelected: (Subject selection) {
+              onSelected: (MinimalPolitician selection) {
                 print('>> selected $selection');
                 navigateForward(context, selection);
               },
@@ -108,13 +108,13 @@ class _SearchBarCustomState extends State<SearchBarCustom> {
                       itemCount: options.length,
                       shrinkWrap: false,
                       itemBuilder: (BuildContext context, int index) {
-                        final Subject option = options.elementAt(index);
+                        final MinimalPolitician option = options.elementAt(index);
                         return InkWell(
                           focusColor: Colors.blue,
                           onTap: () => onSelected(option),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Text(option.toString()),
+                            child: Text(option.name.toString()),
                           ),
                         );
                       },
@@ -129,24 +129,21 @@ class _SearchBarCustomState extends State<SearchBarCustom> {
         ]));
   }
 
-  Future<List<Subject>> fetchSuggestions(String query) async {
+  Future<List<MinimalPolitician>> fetchSuggestions(String query) async {
     final response = await http.get(Uri.parse('$serverUrl/$query'));
     if (response.statusCode == 200) {
       // fixme: migrate to Completion data object
-      List decode = json.decode(response.body)['options'];
-      return decode.map((suggestion) => Subject.fromJson(suggestion)).toList();
+      List decode = json.decode(response.body);
+      return decode.map((suggestion) => MinimalPolitician.fromJson(suggestion)).toList();
     } else {
       throw Exception('Failed to load suggestions');
     }
   }
 
-  void navigateForward(BuildContext context, Subject value) {
+  void navigateForward(BuildContext context, MinimalPolitician value) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) => DetailsScreen(
-                target: value,
-              )),
+      MaterialPageRoute(builder: (context) => DetailsScreen(target: value)),
     );
   }
 }

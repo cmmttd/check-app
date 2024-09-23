@@ -5,3 +5,12 @@ server:
   port: 80
 cors:
   allowed-origins: ${CORS_ALLOWED_URL:*}
+
+open-ai:
+  url:
+    base: https://api.openai.com
+    version: /v1
+    path: /chat/completions
+  token: ${OPENAI_TOKEN}
+  conversation:
+    temperature: 0.2

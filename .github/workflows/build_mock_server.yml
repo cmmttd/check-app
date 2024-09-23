@@ -43,7 +43,8 @@ jobs:
             --machine-type e2-micro \
             --tags http-server,https-server \
             --container-image $IMAGE_DIGESTS \
-            --container-env CORS_ALLOWED_URL=${{vars.TEST_DOMAIN_URL}}
+            --container-env CORS_ALLOWED_URL=${{vars.TEST_DOMAIN_URL}} \
+            --container-env OPENAI_TOKEN=${{secrets.OPENAI_TOKEN}}
           gcloud compute instance-groups managed rolling-action start-update server-mock-group \
             --version template=server-mock-template-v$TIMESTAMP \
             --zone us-east1-c \
