@@ -1,12 +1,11 @@
 import 'dart:convert';
 
-import 'package:check_app/interaction/title_text_button.dart';
-import 'package:check_app/model/Promise.dart';
+import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'model/Politician.dart';
 import 'model/MinimalPolitician.dart';
+import 'model/Politician.dart';
 
 // --dart-define=SERVER_URL=https://mock-server-2szvf52diq-uc.a.run.app/mock --web-port=56558
 const String serverUrl = String.fromEnvironment('SERVER_URL', defaultValue: 'http://localhost:8081/mock');
@@ -27,9 +26,7 @@ class DetailsScreen extends StatelessWidget {
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
         ))),
-        title: TitleTextButton(
-          title: target.name,
-        ),
+        title: Text(style: TextStyle(fontSize: 18), target.name),
         // title: Text("App bar"),
         backgroundColor: Colors.blue.shade300,
         foregroundColor: Colors.blue.shade100,
@@ -58,14 +55,28 @@ class DetailsScreen extends StatelessWidget {
                             politician.bio!,
                           ))),
                 ),
-                // todo: Align the promises list by center
-                SliverFixedExtentList(
-                  itemExtent: 50.0,
+                // todo #23: Align the promises list by center
+                SliverList(
                   delegate: SliverChildBuilderDelegate(
                     childCount: promises.length,
                     (ctx, index) {
                       var promise = promises[index];
-                      return ListTile(iconColor: promise.isFulfilled ? Colors.green : Colors.red, title: CheckMarkRow(promise: promise));
+                      return ExpansionTileCard(
+                        leading: Icon(
+                          promise.isFulfilled ? Icons.done : Icons.dangerous_outlined,
+                          color: promise.isFulfilled ? Colors.green : Colors.red,
+                        ),
+                        title: Text(promise.title),
+                        subtitle: Text(promise.date),
+                        children: [
+                          const Divider(
+                            thickness: 1.0,
+                            height: 1.0,
+                          ),
+                          Padding(padding: EdgeInsets.all(12), child: Text(promise.description)),
+                        ],
+                        // todo #24: Display only one expanded promise
+                      );
                     },
                   ),
                 ),
@@ -84,30 +95,5 @@ Future<Politician> fetchPromises(String uuid) async {
     return Politician.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to load entities');
-  }
-}
-
-class CheckMarkRow extends StatelessWidget {
-  final Promise promise;
-
-  const CheckMarkRow({super.key, required this.promise});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-        height: 42,
-        child: Row(
-          children: [
-            Icon(promise.isFulfilled ? Icons.done : Icons.dangerous_outlined),
-            const SizedBox(
-              width: 4,
-            ),
-            Text(promise.date),
-            const SizedBox(
-              width: 4,
-            ),
-            Text(promise.title)
-          ],
-        ));
   }
 }
