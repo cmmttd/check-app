@@ -18,6 +18,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   parallax_animation: ^0.0.3
   http: ^1.2.1
+  expansion_tile_card: ^3.0.0
 
 dev_dependencies:
   flutter_test:

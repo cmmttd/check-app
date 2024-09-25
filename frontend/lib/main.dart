@@ -58,7 +58,7 @@ class CredentialsArea extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(10, 10, 10, 30),
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: Text("Credentials"),
+              child: Text("About"),
             )));
   }
 }
