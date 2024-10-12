@@ -1,6 +1,7 @@
 import 'package:check_app/interaction/search_bar_custom.dart';
 import 'package:check_app/interaction/title_text_button.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 void main() {
   runApp(const CheckApp());
@@ -53,12 +54,33 @@ class CredentialsArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Expanded(
+    return Expanded(
         child: Padding(
             padding: EdgeInsets.fromLTRB(10, 10, 10, 30),
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: Text("About"),
+              child: TextButton(
+                onPressed: () => showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('About'),
+                    content: const Text(
+                        'The website is developed using Flutter and Spring, deployed on GCP and uses OpenAI GPT4 as a data source.\n'
+                        'If you found the page useful, please feel free to help me with motivation and pay for hosting/api usage.'),
+                    actions: <Widget>[
+                      Align(
+                        alignment: Alignment.center,
+                        child: ElevatedButton(
+                          child: const Text('PayPal'),
+                          onPressed: () => launchUrlString('https://paypal.me/belogrudovw'),
+                          autofocus: true,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                child: const Text('About'),
+              ),
             )));
   }
 }
@@ -77,7 +99,13 @@ class DescriptionCard extends StatelessWidget {
             child: Align(
                 alignment: Alignment.center,
                 child: Card(
-                  child: Padding(padding: EdgeInsets.all(50), child: Text("Description how it may be used. Choose your politician!")),
+                  child: Padding(
+                      padding: EdgeInsets.all(50),
+                      child: Text(
+                        "Check the honesty of your politician.\n"
+                        "Pick one by name, birthdate or any other unique parameter.",
+                        textAlign: TextAlign.center,
+                      )),
                 ))));
   }
 }
