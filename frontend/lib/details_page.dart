@@ -50,7 +50,7 @@ class DetailsScreen extends StatelessWidget {
                   child: Card(
                       child: Padding(
                           padding: EdgeInsets.all(16),
-                          child: Text(
+                          child: SelectableText(
                             style: TextStyle(fontSize: 16),
                             politician.bio!,
                           ))),
@@ -66,14 +66,14 @@ class DetailsScreen extends StatelessWidget {
                           promise.isFulfilled ? Icons.done : Icons.dangerous_outlined,
                           color: promise.isFulfilled ? Colors.green : Colors.red,
                         ),
-                        title: Text(promise.title),
-                        subtitle: Text(promise.date),
+                        title: SelectableText(promise.title),
+                        subtitle: SelectableText(promise.date),
                         children: [
                           const Divider(
                             thickness: 1.0,
                             height: 1.0,
                           ),
-                          Padding(padding: EdgeInsets.all(12), child: Text(promise.description)),
+                          Padding(padding: EdgeInsets.all(12), child: SelectableText(promise.description)),
                         ],
                         // todo #24: Display only one expanded promise
                       );
